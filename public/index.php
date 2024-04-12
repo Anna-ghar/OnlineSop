@@ -1,5 +1,9 @@
 <?php
 session_start();
+require_once '../config/db.php';
+require_once '../models/AdminModel.php';
+require_once '../models/OrdersModel.php';
+require_once '../models/ProductsModel.php';
 require_once '../controllers/AdminController.php';
 require_once '../controllers/OrderController.php';
 require_once '../controllers/ProductsController.php';
@@ -8,14 +12,12 @@ $admin = new AdminController();
 $product=new ProductsController();
 $order = new OrderController();
 
-$route = $_GET['route'] ?? 'first';
-
 include '../views/templates/navigation.php';
-
+$route = $_GET['route'] ?? 'first';
 
 switch ($route) {
     case ('first'):
-        $products = $product->showProducts();
+        $product->showProducts();
         break;
     case 'adminLogin':
         $_SESSION['isAdmin'] = false;
@@ -34,10 +36,10 @@ switch ($route) {
         $product->updateProductById();
         break;
     case 'cart':
-        $order->cart();
+        $order->cartItems();
         break;
     case 'checkout':
-        $order->Checkout();
+        $order->checkout();
         break;
     case 'orders':
         $order->getOrders();

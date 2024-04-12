@@ -1,9 +1,4 @@
 <?php
-
-require_once '../config/db.php';
-require_once '../models/ProductsModel.php';
-require_once '../models/OrdersModel.php';
-
 class OrderController
 {
     private $productModel;
@@ -12,20 +7,23 @@ class OrderController
         $this->productModel = new ProductsModel();
     }
 
-    public function cart()
+    public function cartItems()
     {
         $cartItems = [];
         $_SESSION['total'] = 0;
-        $products = $this->productModel->getProducts();
+
         if (!empty($_SESSION['cart'])) {
+            $ids = [];
+            foreach ($_SESSION['cart'] as $key => $value) {
+                $ids[] = $_SESSION['cart'][$key]['id'];
+            }
+            $products = $this->productModel->getCartItems($ids);
             foreach ($products as $product) {
                 foreach ($_SESSION['cart'] as $key => $value) {
-                    if (in_array($product['product_id'], $_SESSION['cart'][$key])) {
-                        $product['quantity'] = $_SESSION['cart'][$key]['quantity'];
-                        $cartItems[] = $product;
-                        $total = $product['price'] * (int)$product['quantity'];
-                        $_SESSION['total'] += $total;
-                    }
+                    $product['quantity'] = $_SESSION['cart'][$key]['quantity'];
+                    $cartItems[] = $product;
+                    $total = $product['price'] * (int)$product['quantity'];
+                    $_SESSION['total'] += $total;
                 }
             }
             include '../views/templates/cart.php';
@@ -33,7 +31,7 @@ class OrderController
     }
 
 
-    public function Checkout()
+    public function checkout()
     {
         include '../views/templates/checkout.php';
         if (isset($_POST['nameC']) && isset($_POST['phone']) && isset($_POST['addressC']) && isset($_POST['checkoutSubmit']) ){

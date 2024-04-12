@@ -1,6 +1,5 @@
 <?php
 
-require_once '../config/db.php';
 class AdminModel
 {
     public function authenticate($username,$password)

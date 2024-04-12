@@ -1,6 +1,4 @@
 <?php
-
-require_once '../models/ProductsModel.php';
 class ProductsController
 {
     private $productModel;
@@ -64,5 +62,4 @@ class ProductsController
             $this->productModel->editProduct($this->id, $_POST['uTitle'], $_POST['uDescription'], $_POST['uPrice'], $imagePath);
         }
     }
-
 }

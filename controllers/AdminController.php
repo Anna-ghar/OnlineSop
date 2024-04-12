@@ -1,6 +1,4 @@
 <?php
-
-require_once '../models/AdminModel.php';
 class AdminController
 {
     public function adminLogin()

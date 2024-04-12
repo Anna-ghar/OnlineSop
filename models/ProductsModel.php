@@ -1,5 +1,5 @@
 <?php
-require_once '../config/db.php';
+
 class ProductsModel
 {
     private $conn;
@@ -57,28 +57,41 @@ class ProductsModel
     public function orderCheckout($json)
     {
 
-            $sql = 'INSERT INTO orders (customer_info, order_date, total) VALUES (?,?,?)';
-            $stmt = $this->conn->prepare($sql);
-            if ($stmt) {
-                $date=date("Y/m/d");
-                $stmt->bindParam(1, $json);
-                $stmt->bindParam(2, $date);
-                $stmt->bindParam(3, $_SESSION['total']);
-                $stmt->execute();
-                $orderId = $this->conn->lastInsertId();
-            }
-        foreach($_SESSION['cart'] as $key => $value) {
+        $sql = 'INSERT INTO orders (customer_info, order_date, total) VALUES (?,?,?)';
+        $stmt = $this->conn->prepare($sql);
+        if ($stmt) {
+            $date = date("Y/m/d");
+            $stmt->bindParam(1, $json);
+            $stmt->bindParam(2, $date);
+            $stmt->bindParam(3, $_SESSION['total']);
+            $stmt->execute();
+            $orderId = $this->conn->lastInsertId();
+        }
+        foreach ($_SESSION['cart'] as $key => $value) {
             $sql = 'INSERT INTO order_items (order_id,product_id,quantity) VALUES (?,?,?)';
             $stmt = $this->conn->prepare($sql);
             if ($stmt) {
-                $product_id=$_SESSION['cart'][$key]['id'];
+                $product_id = $_SESSION['cart'][$key]['id'];
                 $quantity = $_SESSION['cart'][$key]['quantity'];
-                $stmt->bindParam(1,$orderId);
-                $stmt->bindParam(2,$product_id);
-                $stmt->bindParam(3,$quantity);
+                $stmt->bindParam(1, $orderId);
+                $stmt->bindParam(2, $product_id);
+                $stmt->bindParam(3, $quantity);
                 $stmt->execute();
             }
         }
+    }
+
+    public function getCartItems($ids)
+    {
+        $cartItems = [];
+        foreach ($ids as $id){
+            $sql = 'SELECT * FROM products WHERE product_id = :id';
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute(array(':id' => $id));
+            $cartItems[] = $stmt->fetch(PDO::FETCH_ASSOC);
+            }
+        return $cartItems;
+
     }
 
 }
