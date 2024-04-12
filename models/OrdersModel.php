@@ -11,15 +11,25 @@ class OrdersModel
     public function getCartItems($ids)
     {
         $cartItems = [];
-        foreach ($ids as $id){
-            $sql = 'SELECT * FROM products WHERE product_id = :id';
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute(array(':id' => $id));
-            $cartItems[] = $stmt->fetch(PDO::FETCH_ASSOC);
-        }
-        return $cartItems;
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
 
+        $sql = 'SELECT * FROM products WHERE product_id IN (' . $placeholders . ')';
+        $stmt = $this->conn->prepare($sql);
+
+        foreach ($ids as $key => $id) {
+            $stmt->bindValue(($key + 1), $id, PDO::PARAM_INT);
+        }
+
+        $stmt->execute();
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $cartItems[] = $row;
+        }
+
+        return $cartItems;
     }
+
+
 
     public function orderCheckout()
     {
@@ -49,6 +59,7 @@ class OrdersModel
         }
     }
 
+
     public function orders()
     {
         try {
@@ -76,9 +87,5 @@ class OrdersModel
         }
 
     }
-
-
-
-
 
 }

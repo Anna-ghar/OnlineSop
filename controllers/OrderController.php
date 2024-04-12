@@ -8,7 +8,6 @@ class OrderController
     {
         $this->orderModel = new OrdersModel();
     }
-
     public function cartItems()
     {
         $cartItems = [];
@@ -20,17 +19,24 @@ class OrderController
                 $ids[] = $_SESSION['cart'][$key]['id'];
             }
             $products = $this->orderModel->getCartItems($ids);
+
             foreach ($products as $product) {
-                foreach ($_SESSION['cart'] as $key => $value) {
-                    $product['quantity'] = $_SESSION['cart'][$key]['quantity'];
-                    $cartItems[] = $product;
-                    $total = $product['price'] * (int)$product['quantity'];
-                    $_SESSION['total'] += $total;
+                foreach ($_SESSION['cart'] as $cartItem) {
+                    if ($product['product_id'] == $cartItem['id']) {
+                        $cartProduct = $product;
+                        $cartProduct['quantity'] = $cartItem['quantity'];
+                        $cartItems[] = $cartProduct;
+                        $total = $product['price'] * (int)$cartItem['quantity'];
+                        $_SESSION['total'] += $total;
+                        break;
+                    }
                 }
             }
         }
         include '../views/templates/cart.php';
     }
+
+
 
 
     public function checkout()
