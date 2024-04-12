@@ -26,8 +26,8 @@ class OrderController
                     $_SESSION['total'] += $total;
                 }
             }
-            include '../views/templates/cart.php';
         }
+        include '../views/templates/cart.php';
     }
 
 
